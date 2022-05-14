@@ -6,7 +6,7 @@ library(stringr)
 
 ##Create Variable
 ##Tabel KOB 2021
-kob_21 <- read.csv("https://docs.google.com/spreadsheets/d/14KEND2KI7s0snPi3Uha-RMUjfIjrcJo1/export?format=csv&gid=2040134033")
+kob_21 <- read.csv("https://docs.google.com/spreadsheets/d/14KEND2KI7s0snPi3Uha-RMUjfIjrcJo1/export?format=csv&gid=443830354")
 head(kob_21)
 
 #tabel order 2021
@@ -35,7 +35,7 @@ order_area <- order_and_cc %>%
                                                  TRUE ~ "Operasional")) %>%
   write.csv("daftar_order.csv")
 
-
+head(order)
 
 
 
