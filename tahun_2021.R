@@ -35,7 +35,7 @@ order_area <- order_and_cc %>%
                                                  TRUE ~ "Operasional")) %>%
   write.csv("daftar_order.csv")
 
-head(order)
+head(order_area)
 
 
 
