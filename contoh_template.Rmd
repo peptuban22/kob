@@ -1,0 +1,268 @@
+---
+title: "contoh rekap OVH code"
+output: html_document
+date: '2022-05-13'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Tabel Realisasi Material Berdasarkan Jenis Aktivitas
+
+
+```{r include=FALSE}
+library(kableExtra)
+library(knitr)
+library(tidyverse)
+library(stringr)
+library(DT)
+library(lubridate)
+library(scales)
+#URL REALISASI_KOB_2020
+#https://docs.google.com/spreadsheets/d/e/2PACX-1vQRCjDFPAbRWG29tZi-ElqxltS79tuT4Yhn4LfTUYJVufwjtad25YJp4rsFPCrC1SEg_4A_V3IITH6B/pub?gid=0&single=true&output=csv
+#Nama file "REALISASI_KOB_2020" (bulan Januari - Agustus 2020)
+
+#Realisasi September 2020
+#nama file "09_REALISASI_SEPTEMBER_2020"
+#url CSV "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUYsfUgVYlVMpSWUj0U20y7GjAFgdPdNQhMxry-_31ekA_9i1KIlNHoiDgI0H0N1ady3g2SGQUICBU/pub?gid=0&single=true&output=csv"
+
+#Realisasi Oktober 2020
+#nama file "10_REALISASI_OKTOBER_2020"
+#url CSV "https://docs.google.com/spreadsheets/d/e/2PACX-1vT8rvKbveA6zpqnmjRLfpkFszVZWSVHhLsx0Ldxhpj_SRv5L7aO9oBKGEVzjqeWPiDCY_a45FFRMYwc/pub?gid=0&single=true&output=csv"
+
+real_kob_2020_agt <- read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQRCjDFPAbRWG29tZi-ElqxltS79tuT4Yhn4LfTUYJVufwjtad25YJp4rsFPCrC1SEg_4A_V3IITH6B/pub?gid=0&single=true&range=A1:AK21613&chrome=false&output=csv")
+
+real_kob_2020_sep <- read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQUYsfUgVYlVMpSWUj0U20y7GjAFgdPdNQhMxry-_31ekA_9i1KIlNHoiDgI0H0N1ady3g2SGQUICBU/pub?gid=0&single=true&output=csv")
+
+real_kob_2020_okt <- read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vT8rvKbveA6zpqnmjRLfpkFszVZWSVHhLsx0Ldxhpj_SRv5L7aO9oBKGEVzjqeWPiDCY_a45FFRMYwc/pub?gid=0&single=true&output=csv")
+
+#Gabungkan realisasi 2020
+real_kob_2020 <- rbind(real_kob_2020_agt, real_kob_2020_sep, real_kob_2020_okt)
+
+#menggunakan Case_when membuat variabel Kat1(This code is used)
+#Create new variable based on Deskripsi.kegiatan
+real_KAT1 <- real_kob_2020 %>%
+  mutate(
+    KAT1 = case_when(
+      str_detect(DESKRIPSI.KEGIATAN,".[o|O][v|V][h|H].|[o|O][v|V][h|H]") ~ "Overhoule",
+      str_detect(DESKRIPSI.KEGIATAN,".[o|O][v|V][e|E][r|R][h|H].|[o|O][v|V][e|E][r|R][h|H]") ~ "Overhoule",
+      str_detect(DESKRIPSI.KEGIATAN,".[p|P][a|A][t|T][c|C].|[p|P][a|A][t|T][c|C]") ~ "Patchjob",
+      TRUE ~ "Operasional"))
+
+
+#Create date variable "tanggal2"
+real_KAT1 <- real_KAT1 %>%
+  mutate(tanggal2 = as.Date(real_KAT1$Document.Date, format = "%d/%m/%Y"))
+
+
+#Daftar lokasi ovh kiln 1
+area_kiln1 <- c("COAL MILL T1SIE RKC1",
+                "CRUSHER BT. KAPUR T1",
+                "CRUSHER TNH LIAT T1",
+                "KILN T1 - SIE RKC1",
+                "RAW MILL T1 SIE RKC1"
+)
+
+#Daftar lokasi ovh kiln 2
+area_kiln2 <- c("COAL MILL T2 SI RKC2",
+                "CRUSHER BT. KAPUR T2",
+                "CRUSHER TNH LIAT T2",
+                "KILN T2 - SIE RKC2",
+                "RAW MILL T2 SIE RKC2"
+)
+
+#Daftar lokasi ovh kiln 3
+area_kiln3 <- c("COAL MILL T3 SI RKC3",
+                "CRUSHER BT. KAPUR T3",
+                "CRUSHER TNH LIAT T3",
+                "KILN T3 - SIE RKC3",
+                "RAW MILL T3 SIE RKC3"
+)
+
+#Daftar lokasi ovh kiln 4
+area_kiln4 <- c("COAL MILL T4SIE RKC4",
+                "CRUSHER BT. KAPUR T4",
+                "CRUSHER TNH LIAT T4",
+                "KILN T4 - SIE RKC4",
+                "RAW MILL T4 SIE RKC4"
+)
+
+#Daftar OVH penunjang Kiln
+ov_pnj_kiln1 <- c(13700499,
+                  13716301,
+                  13716417
+)
+
+ov_pnj_kiln2 <- c(11030945,
+                  11030946,
+                  11030984)
+ov_pnj_kiln3 <- c(11028490,
+                  11028808,
+                  11028871,
+                  13695422)
+ov_pnj_kiln4 <- c(12091914,
+                  12093311,
+                  13686406,
+                  13688319,
+                  13688424,
+                  13688426,
+                  13691223,
+                  13691567,
+                  13691700,
+                  13692147,
+                  16027549,
+                  16028760)
+ov_pnj_mill1 <- c(11029193,
+                  11029194,
+                  11029195,
+                  11029196,
+                  11029197,
+                  13698565)
+
+ov_pnj_mill2 <- c(11031948,
+                  11032465)
+ov_pnj_mill4 <- c(11031654)
+ov_pnj_mill5 <- c(11031243,
+                  11031245,
+                  11031515)
+ov_pnj_mill6 <- c(11028745,
+                  11028746,
+                  11028747,
+                  11028748,
+                  13694069,
+                  13695657)
+ov_pnj_mill7 <- c(11027587,
+                  11027650)
+ov_pnj_mill8 <- c(11028193,
+                  11029501)
+ov_pnj_mill9 <- c(11027564,
+                  11027818)                 
+
+
+
+
+#Membuat variabel kategori overhoule 1
+kategori_ovh1 <- real_KAT1 %>%
+  mutate(kategori_ovh = case_when(
+    KAT1 == "Overhoule" & Description_CC_PS %in% area_kiln1 ~ "Overhoule Kiln 1",
+    KAT1 == "Overhoule" & Description_CC_PS %in% area_kiln2 ~ "Overhoule Kiln 2",
+    KAT1 == "Overhoule" & Description_CC_PS %in% area_kiln3 ~ "Overhoule Kiln 3",
+    KAT1 == "Overhoule" & Description_CC_PS %in% area_kiln4 ~ "Overhoule Kiln 4",
+    KAT1 == "Overhoule" & Description_CC_PS == "FINISH MILL 1 TBN 1" ~ "Overhoule Mill 1",
+    KAT1 == "Overhoule" & Description_CC_PS == "FINISH MILL 1 TBN 2" ~ "Overhoule Mill 3",
+    KAT1 == "Overhoule" & Description_CC_PS == "FINISH MILL 1 TBN 3" ~ "Overhoule Mill 5",
+    KAT1 == "Overhoule" & Description_CC_PS == "FINISH MILL 1 TBN 4" ~ "Overhoule Mill 7",
+    KAT1 == "Overhoule" & Description_CC_PS == "FINISH MILL 2 TBN 1" ~ "Overhoule Mill 2",
+    KAT1 == "Overhoule" & Description_CC_PS == "FINISH MILL 2 TBN 2" ~ "Overhoule Mill 4",
+    KAT1 == "Overhoule" & Description_CC_PS == "FINISH MILL 2 TBN 3" ~ "Overhoule Mill 6",
+    KAT1 == "Overhoule" & Description_CC_PS == "FINISH MILL 2 TBN 4" ~ "Overhoule Mill 8",
+    KAT1 == "Overhoule" & Description_CC_PS == "FINISH MILL 9 TBN" ~ "Overhoule Mill 9",
+    KAT1 == "Overhoule" & Description_CC_PS == "NEW COAL MILL T123" ~ "Overhoule Kiln 1",
+    KAT1 == "Overhoule" & Order %in% ov_pnj_kiln1 ~ "Overhoule Kiln 1",
+    KAT1 == "Overhoule" & Order %in% ov_pnj_kiln2 ~ "Overhoule Kiln 2",
+    KAT1 == "Overhoule" & Order %in% ov_pnj_kiln3 ~ "Overhoule Kiln 3",
+    KAT1 == "Overhoule" & Order %in% ov_pnj_kiln4 ~ "Overhoule Kiln 4",
+    KAT1 == "Overhoule" & Order %in% ov_pnj_mill1 ~ "Overhoule Mill 1",
+    KAT1 == "Overhoule" & Order %in% ov_pnj_mill2 ~ "Overhoule Mill 2",
+    KAT1 == "Overhoule" & Order %in% ov_pnj_mill4 ~ "Overhoule Mill 4",
+    KAT1 == "Overhoule" & Order %in% ov_pnj_mill5 ~ "Overhoule Mill 5",
+    KAT1 == "Overhoule" & Order %in% ov_pnj_mill6 ~ "Overhoule Mill 6",
+    KAT1 == "Overhoule" & Order %in% ov_pnj_mill7 ~ "Overhoule Mill 7",
+    KAT1 == "Overhoule" & Order %in% ov_pnj_mill8 ~ "Overhoule Mill 8",
+    KAT1 == "Overhoule" & Order %in% ov_pnj_mill9 ~ "Overhoule Mill 9",
+    KAT1 == "Overhoule" & AREA %in% "Packer" ~ "Operasional",
+    KAT1 == "Patchjob" ~ "Patchjob",
+    TRUE ~ "Operasional"))
+
+
+
+
+
+#Create table summary per kategori aktivitas
+daftar_per_aktivitas <- kategori_ovh1 %>%
+  group_by(kategori_ovh)%>%
+  summarize(
+    Jan = sum(Amount.in.LC[which(MONTH == 1)]),
+    Feb = sum(Amount.in.LC[which(MONTH == 2)]),
+    Mar = sum(Amount.in.LC[which(MONTH == 3)]),
+    Apr = sum(Amount.in.LC[which(MONTH == 4)]),
+    Mei = sum(Amount.in.LC[which(MONTH == 5)]),
+    Jun = sum(Amount.in.LC[which(MONTH == 6)]),
+    Jul = sum(Amount.in.LC[which(MONTH == 7)]),
+    Agt = sum(Amount.in.LC[which(MONTH == 8)]),
+    Sep = sum(Amount.in.LC[which(MONTH == 9)]),
+    Okt = sum(Amount.in.LC[which(MONTH == 10)]),
+    Nop = sum(Amount.in.LC[which(MONTH == 11)]),
+    Des = sum(Amount.in.LC[which(MONTH == 12)]),
+    jumlah = sum(Amount.in.LC, na.rm=TRUE)
+  )
+
+
+
+#Ada nilai amount yang minus pada bulan Mei dan agustus, Perlu penyesuaian agar bernilai positif
+#Create pivot table to eliminate negative value.
+
+#pivot material dan order 
+pivot1 <- kategori_ovh1 %>% 
+  group_by(Order, Material, Description, Base.Unit, kategori_ovh) %>%
+  summarize(kuantiti = sum(Quantity),
+            amount = sum(Amount.in.LC),
+            min_date = min(tanggal2),
+            MONTH = month(min_date, label = FALSE)
+           )
+
+
+#Membuat daftar setelah nilai negatif disesuaikan
+
+daftar_per_aktivitas2 <- pivot1 %>%
+  group_by(kategori_ovh)%>%
+  summarize(
+    Jan = sum(amount[which(MONTH == 1)]),
+    Feb = sum(amount[which(MONTH == 2)]),
+    Mar = sum(amount[which(MONTH == 3)]),
+    Apr = sum(amount[which(MONTH == 4)]),
+    Mei = sum(amount[which(MONTH == 5)]),
+    Jun = sum(amount[which(MONTH == 6)]),
+    Jul = sum(amount[which(MONTH == 7)]),
+    Agt = sum(amount[which(MONTH == 8)]),
+    Sep = sum(amount[which(MONTH == 9)]),
+    Okt = sum(amount[which(MONTH == 10)]),
+    Nop = sum(amount[which(MONTH == 11)]),
+    Des = sum(amount[which(MONTH == 12)]),
+    jumlah = sum(amount, na.rm=TRUE)
+  ) 
+
+
+#check class variable  daftar_per_aktivitas2
+sapply(daftar_per_aktivitas2, class) 
+
+#Declare variable to formatted
+kolom_used <- c(2,3,4,5,6,7,8,9,10,11,12,13,14)
+
+#formatting number using comma separator
+daftar_per_aktivitas2[kolom_used] <- sapply(daftar_per_aktivitas2[kolom_used], comma)
+
+#Check class, numeric class supposed to be character
+sapply(daftar_per_aktivitas2, class)
+
+```
+
+
+
+```{r table_page, echo=FALSE}
+datatable(daftar_per_aktivitas2)
+
+```
+
+
+
+```{r table_page2, echo=FALSE}
+
+  datatable(daftar_per_aktivitas2, extensions = 'Buttons',
+            options = list(dom = 'Blfrtip',
+                           buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+                           lengthMenu = list(c(5,10,20,-1),
+                                             c(5,10,20,"All"))))
+```
+
