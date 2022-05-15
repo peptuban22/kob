@@ -1,4 +1,4 @@
-  library(tidyverse)
+library(tidyverse)
 library(dplyr)
 library(stringr)
 
@@ -35,7 +35,15 @@ order_area <- order_and_cc %>%
                                                  TRUE ~ "Operasional")) %>%
   write.csv("daftar_order.csv")
 
-head(order_area)
+
+
+#Memilih kolom kob yang dipakai
+kob_21 <- kob_21 %>% select(c(2:10))
+
+#Join KOB dan jenis aktivitas order
+kob21_join <- merge(kob_21, order_area, by="Order")
+
+
 
 
 
