@@ -64,5 +64,5 @@ kob21_join <- kob21_join %>%
 #menggabungkan kob dan nama unit kerja
 KOB_UK_21 <- merge(kob21_join, tabel_uk, by="Planner.group")
 
-sheet_write(KOB_UK_21)
+write_tsv(KOB_UK_21, "KOB21")
 
