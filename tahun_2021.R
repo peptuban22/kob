@@ -1,8 +1,17 @@
 library(tidyverse)
 library(dplyr)
 library(stringr)
+library(googlesheets4)
 
 
+
+
+#read data unit kerja
+tabel_uk <- range_read("https://docs.google.com/spreadsheets/d/1_zKzlIdAXPgbtgtfrTAlyo2NJdoY5n0tVuXXa4DltfU/edit#gid=1209260409", sheet = "uk")
+tabel_uk <- tabel_uk %>%  select (c(2,7,8,9))
+
+#mengubah class kode seksi
+as.character(tabel_uk$Planner.group)
 
 ##Create Variable
 ##Tabel KOB 2021
@@ -43,11 +52,17 @@ kob_21 <- kob_21 %>% select(c(2:10))
 #Join KOB dan jenis aktivitas order
 kob21_join <- merge(kob_21, order_area, by="Order")
 
+#Menggunakan  library google sheets
+library(googlesheets4)
 
+#Get date format
+kob21_join <- kob21_join %>% 
+              mutate (post.date = as.Date(Posting.Date, origin = "1899-12-30")) %>% 
+  
+              mutate(MONTH = month(post.date), Tahun = 2021)
 
+#menggabungkan kob dan nama unit kerja
+KOB_UK_21 <- merge(kob21_join, tabel_uk, by="Planner.group")
 
-
-
-
-
+sheet_write(KOB_UK_21)
 
