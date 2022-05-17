@@ -2,7 +2,7 @@ library(tidyverse)
 library(dplyr)
 library(stringr)
 library(googlesheets4)
-
+library(lubridate)
 
 
 
@@ -52,8 +52,6 @@ kob_21 <- kob_21 %>% select(c(2:10))
 #Join KOB dan jenis aktivitas order
 kob21_join <- merge(kob_21, order_area, by="Order")
 
-#Menggunakan  library google sheets
-library(googlesheets4)
 
 #Get date format
 kob21_join <- kob21_join %>% 
@@ -64,5 +62,5 @@ kob21_join <- kob21_join %>%
 #menggabungkan kob dan nama unit kerja
 KOB_UK_21 <- merge(kob21_join, tabel_uk, by="Planner.group")
 
-write_tsv(KOB_UK_21, "KOB21")
+
 
