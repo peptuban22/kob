@@ -15,11 +15,11 @@ as.character(tabel_uk$Planner.group)
 
 ##Create Variable
 ##Tabel KOB 2020
-kob_20 <- read.csv("https://docs.google.com/spreadsheets/d/14HA45Gax2X7qyACwnmZSQoLyOGTiehDW/export?format=csv&gid=955618436")
+kob_19 <- read.csv("https://docs.google.com/spreadsheets/d/142hzsvIVvgeaNKG-cuABb_KV4qivIF26/export?format=csv&gid=1325432175")
 
 
 #tabel order 2021
-IW39_2020 <- read.csv("https://docs.google.com/spreadsheets/d/14X5xS0mUtn44bEhcvzgFV4nldW1vsCT2/export?format=csv&gid=245323168")
+IW39_2019 <- read.csv("https://docs.google.com/spreadsheets/d/14SKmoYvXczjdFSjwndJ0uPFpvDx8Menx/export?format=csv&gid=1987300597")
 
 #Tabel cc
 cc <- read.csv("https://docs.google.com/spreadsheets/d/15DnkUrx2Cl0Sk4L_VU1ghArLlbgi9WveUQ4Rmd5LAp4/export?format=csv&gid=0")
@@ -30,19 +30,19 @@ cost_center <- read.csv("https://docs.google.com/spreadsheets/d/15DnkUrx2Cl0Sk4L
 
 #join order dengan Plant, area, detail area
 
-cc_order_20 <- cc %>% select(BU, Area.Proses, PLANT, Detail.area) %>%
-            rename(Cost.Center = BU)
-            
+cc_order_19 <- cc %>% select(BU, Area.Proses, PLANT, Detail.area) %>%
+  rename(Cost.Center = BU)
 
-order_and_cc_20 <- merge(IW39_2020, cc_order_20, by="Cost.Center")
+
+order_and_cc_19 <- merge(IW39_2019, cc_order_19, by="Cost.Center")
 
 #Membuat Column OVH pada daftar Order
-order_area_20 <- order_and_cc_20 %>% 
-              mutate(Jenis.aktivitas = case_when(str_detect(Description,".[o|O][v|V][h|H].|[o|O][v|V][h|H]") ~ "Overhoule",
-                                                 str_detect(Description,".[o|O][v|V][e|E][r|R][h|H].|[o|O][v|V][e|E][r|R][h|H]") ~ "Overhoule",
-                                                 str_detect(Description,".[p|P][a|A][t|T][c|C].|[p|P][a|A][t|T][c|C]") ~ "Patchjob",
-                                                 TRUE ~ "Operasional")) 
- 
+order_area_19 <- order_and_cc_19 %>% 
+  mutate(Jenis.aktivitas = case_when(str_detect(Description,".[o|O][v|V][h|H].|[o|O][v|V][h|H]") ~ "Overhoule",
+                                     str_detect(Description,".[o|O][v|V][e|E][r|R][h|H].|[o|O][v|V][e|E][r|R][h|H]") ~ "Overhoule",
+                                     str_detect(Description,".[p|P][a|A][t|T][c|C].|[p|P][a|A][t|T][c|C]") ~ "Patchjob",
+                                     TRUE ~ "Operasional")) 
+
 
 
 
@@ -82,7 +82,7 @@ area_kiln4 <- c("COAL MILL T4SIE RKC4",
 
 
 #menambahkan variabel OVH_AREA
-order_area_20 <- order_area_20 %>%
+order_area_19 <- order_area_19 %>%
   mutate(kategori_ovh = case_when(
     Jenis.aktivitas == "Overhoule" & Detail.area %in% area_kiln1 ~ "Overhoule Kiln 1",
     Jenis.aktivitas == "Overhoule" & Detail.area %in% area_kiln2 ~ "Overhoule Kiln 2",
@@ -105,21 +105,20 @@ order_area_20 <- order_area_20 %>%
 
 
 #Memilih kolom kob yang dipakai
-kob_20 <- kob_20 %>% select(c(2:10))
+kob_19 <- kob_19 %>% select(c(2:10))
 
 #Join KOB dan jenis aktivitas order
-kob20_join <- merge(kob_20, order_area_20, by="Order")
+kob19_join <- merge(kob_19, order_area_19, by="Order")
 
 
 #Get date format
-kob20_join <- kob20_join %>% 
-              mutate (post.date = as.Date(Posting.Date, origin = "1899-12-30")) %>% 
+kob19_join <- kob19_join %>% 
+  mutate (post.date = as.Date(Posting.Date, origin = "1899-12-30")) %>% 
   
-              mutate(MONTH = month(post.date), Tahun = 2021)
+  mutate(MONTH = month(post.date), Tahun = 2019)
 
 #menggabungkan kob dan nama unit kerja
-KOB_UK_20 <- merge(kob20_join, tabel_uk, by="Planner.group")
+KOB_UK_19 <- merge(kob19_join, tabel_uk, by="Planner.group")
 
-
-
+write.csv(KOB_UK_19, "KOB19.csv")
 
