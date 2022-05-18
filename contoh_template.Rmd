@@ -55,7 +55,7 @@ real_KAT1 <- real_kob_2020 %>%
 real_KAT1 <- real_KAT1 %>%
   mutate(tanggal2 = as.Date(real_KAT1$Document.Date, format = "%d/%m/%Y"))
 
-
+##Menambahkan  Kolom ovh area
 #Daftar lokasi ovh kiln 1
 area_kiln1 <- c("COAL MILL T1SIE RKC1",
                 "CRUSHER BT. KAPUR T1",
