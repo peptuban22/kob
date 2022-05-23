@@ -108,11 +108,11 @@ order_area_17 <- order_area_17 %>%
 kob_17 <- kob_17 %>% select(c(2:10))
 
 #Join KOB dan jenis aktivitas order
-kob18_join <- merge(kob_17, order_area_17, by="Order")
+kob17_join <- merge(kob_17, order_area_17, by="Order")
 
 
 #Get date format
-kob18_join <- kob18_join %>% 
+kob17_join <- kob17_join %>% 
   mutate (post.date = as.Date(Posting.Date, origin = "1899-12-30")) %>% 
   
   mutate(MONTH = month(post.date), Tahun = 2017)
